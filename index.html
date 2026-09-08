@@ -41,11 +41,21 @@ summary{transition:color .2s}summary:hover{color:#0f5f86}
 summary:after{transition:transform .3s cubic-bezier(.2,.75,.3,1)}
 details[open]>summary:after{content:'+';transform:rotate(45deg)}
 .has-js details[open] .answer{animation:riseIn .4s ease backwards}
-.countdown{display:inline-flex;align-items:baseline;gap:10px;margin-top:16px}
+.countdown{display:block;margin-top:18px;max-width:430px}
 .countdown:empty{display:none}
-.countdown b{font-size:1.6rem;color:var(--sky);letter-spacing:-.045em;line-height:1}
-.countdown span{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#a8c2d6}
-.countdown .dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:pulseDot 1.9s ease-in-out infinite}
+.cd-top{display:flex;align-items:baseline;gap:13px}
+.cd-n{font-size:2.5rem;line-height:1;letter-spacing:-.05em;color:var(--sky);font-variant-numeric:tabular-nums}
+.cd-t{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:#a8c2d6}
+.cd-rule{position:relative;height:27px;margin-top:14px}
+.cd-rule:before{content:"";position:absolute;left:0;right:0;top:0;height:11px;border-top:1px solid rgba(255,255,255,.26);
+ background-image:repeating-linear-gradient(to right,rgba(255,255,255,.30) 0 1px,transparent 1px 10%)}
+.cd-fill{position:absolute;left:0;top:-1px;height:2px;width:0;background:#D7DF23;transition:width 1.2s cubic-bezier(.2,.75,.3,1)}
+.cd-cur{position:absolute;left:0;top:-3px;width:1px;height:19px;background:var(--sky);transition:left 1.2s cubic-bezier(.2,.75,.3,1)}
+.cd-cur:after{content:"";position:absolute;top:-3px;left:-3px;width:7px;height:7px;background:var(--sky);animation:pulseDot 2.2s ease-in-out infinite}
+.cd-ends{position:absolute;left:0;right:0;top:15px;display:flex;justify-content:space-between;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:#7ea4c0}
+.cd-live{display:flex;align-items:center;gap:10px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#a8c2d6}
+.cd-live .dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:pulseDot 1.9s ease-in-out infinite}
+@media(max-width:520px){.cd-n{font-size:2.1rem}.countdown{max-width:100%}}
 .button{border-radius:0;padding:0;gap:0;min-height:50px;align-items:stretch;overflow:hidden;font-size:.86rem}
 .button .lbl{display:flex;align-items:center;padding:0 21px}
 .button .ico{display:flex;align-items:center;padding:0 15px;border-left:1px solid #73889d;transition:background-color .25s,transform .3s cubic-bezier(.2,.75,.3,1)}
@@ -91,7 +101,7 @@ details[open]>summary:after{content:'+';transform:rotate(45deg)}
 .nav a{transition:color .22s,background-color .22s,border-left-color .28s}
 @media(max-width:1100px){.careers,.contact-cta,.back-wrap{margin-left:0}.role{grid-template-columns:1fr;gap:0;margin-top:30px;padding-top:22px}.role-aside{position:static;padding-bottom:18px}.role-aside:before{font-size:1.85rem;margin-bottom:11px}.role-links{grid-template-columns:repeat(2,1fr)}.role-links .role-link:nth-child(n+3){border-top:1px solid var(--line)}}
 @media(max-width:760px){.tools{flex-direction:column;width:100%;margin-top:20px}.text-button{border-left-width:1px;border-top-width:0;justify-content:flex-start;font-size:.7rem}.tools .text-button:first-of-type{border-top-width:1px}.callout{grid-template-columns:1fr}.callout:before{width:76px}.callout .rot{padding-top:16px}.callout p{padding-top:9px}.role-links{grid-template-columns:1fr;margin:24px 0 26px}.role-link,.role-links .role-link:nth-child(n+3){border-left:0;border-top:1px solid var(--line);padding:14px 0 15px}.role-links .role-link:first-child{border-top:0}.role{margin-top:26px;padding-top:20px}.button{width:100%}.button .lbl{flex:1}.progress{left:0}.to-top{right:14px;bottom:14px}}
-@media(prefers-reduced-motion:reduce){.hero .eyebrow,.hero .draft,.hero h1,.hero .lead,.hero-links,.dateband,.hero:after,.has-js details[open] .answer,.role.flash,.countdown .dot{animation:none!important}.has-js .reveal{opacity:1!important;transform:none!important}.has-js .reveal,.carrera,.role-link,.document-row,.step,.role,.button,.to-top,.role-link .nom i,.button .ico,summary:after{transition:none!important}.has-js .section-head .sec-num{border-top-color:#5faec8}.has-js .step{border-top-color:#abc9d9}}
+@media(prefers-reduced-motion:reduce){.hero .eyebrow,.hero .draft,.hero h1,.hero .lead,.hero-links,.dateband,.hero:after,.has-js details[open] .answer,.role.flash,.countdown .dot,.cd-cur:after,.cd-live .dot{animation:none!important}.cd-fill,.cd-cur{transition:none!important}.has-js .reveal{opacity:1!important;transform:none!important}.has-js .reveal,.carrera,.role-link,.document-row,.step,.role,.button,.to-top,.role-link .nom i,.button .ico,summary:after{transition:none!important}.has-js .section-head .sec-num{border-top-color:#5faec8}.has-js .step{border-top-color:#abc9d9}}
 @media print{.has-js .reveal{opacity:1!important;transform:none!important}}
 /* ——— Documento impreso / PDF ——————————————————————————————————————
    El objetivo es que salga como un documento institucional, no como la
@@ -340,11 +350,38 @@ document.querySelectorAll('.role-link').forEach(function(a){
 (function(){
  var caja=document.querySelector('#cuenta');
  if(!caja)return;
- var inicio=new Date(2026,8,28), fin=new Date(2026,9,1,23,59,59);
- var hoy=new Date(); hoy.setHours(0,0,0,0);
- var dias=Math.round((inicio-hoy)/86400000);
- if(dias>0){caja.innerHTML='<b>'+dias+'</b><span>'+(dias===1?'día para la visita':'días para la visita')+'</span>';}
- else if(hoy<=fin){caja.innerHTML='<span class="dot"></span><span>La visita está en curso</span>';}
+ var dia0=new Date(2026,8,28), inicio=new Date(2026,8,28,9,0,0), fin=new Date(2026,9,1,23,59,59);
+ var VENTANA=50; /* días que abarca la regla: cada división son 5 días */
+ function diasCalendario(){
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((dia0-hoy)/86400000);
+ }
+ var ahora=new Date();
+ if(diasCalendario()<=0){
+  if(ahora<=fin){caja.innerHTML='<span class="cd-live"><span class="dot"></span>La visita está en curso</span>';}
+  return;
+ }
+ function texto(d){return d===1?'día para la visita':'días para la visita';}
+ var d0=diasCalendario();
+ caja.innerHTML='<div class="cd-top"><span class="cd-n" id="cd-n">'+d0+'</span>'
+  +'<span class="cd-t" id="cd-t">'+texto(d0)+'</span></div>'
+  +'<div class="cd-rule" aria-hidden="true"><span class="cd-fill" id="cd-fill"></span>'
+  +'<span class="cd-cur" id="cd-cur"></span>'
+  +'<span class="cd-ends"><span>hoy</span><span>28 sep</span></span></div>';
+ var f=document.getElementById('cd-fill'), c=document.getElementById('cd-cur');
+ function ubicar(){
+  var d=diasCalendario();
+  if(d<=0){location.reload();return;}
+  var n=document.getElementById('cd-n'), t=document.getElementById('cd-t');
+  if(n)n.textContent=d;
+  if(t)t.textContent=texto(d);
+  var falta=inicio-new Date();
+  var avance=Math.max(0,Math.min(1,1-(falta/86400000)/VENTANA))*100;
+  f.style.width=avance+'%'; c.style.left=avance+'%';
+ }
+ /* dos cuadros de espera para que la regla se dibuje avanzando desde cero */
+ requestAnimationFrame(function(){requestAnimationFrame(ubicar)});
+ setInterval(ubicar,60000);
 })();
 </script>
 </body>
