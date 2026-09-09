@@ -382,5 +382,106 @@ document.querySelectorAll('.role-link').forEach(function(a){
  setInterval(ubicar,60000);
 })();
 </script>
+<!-- ==========================================================================
+     Analitica de uso - GoatCounter
+     Sin cookies, sin identificadores y sin datos personales: por eso no hace
+     falta cartel de consentimiento.
+
+     >>> PARA ACTIVARLA: poner el codigo del sitio en la variable CODIGO, unas
+         lineas mas abajo. Es lo UNICO que hay que cambiar.
+         Con CODIGO vacio la pagina no pide absolutamente nada afuera.
+
+     El script de GoatCounter es el unico pedido a otro servidor que hace este
+     sitio (las fuentes y el logo son locales). Si no carga -bloqueador, sin
+     conexion, o la variable vacia- la pagina funciona exactamente igual: cada
+     llamada esta protegida y nada depende de que exista.
+
+     GoatCounter no cuenta desde localhost ni desde archivos abiertos con doble
+     clic, asi que las pruebas locales no ensucian los numeros.
+     ========================================================================== -->
+<script>
+(function(){
+ /* ====== UNICA LINEA A EDITAR ====================================== */
+ var CODIGO = 'acreditacion-frp';   /* cuenta de GoatCounter. Panel: acreditacion-frp.goatcounter.com */
+ /* ================================================================== */
+
+ if(!CODIGO) return;
+
+ /* --- Carga del contador ------------------------------------------- */
+ var gc = document.createElement('script');
+ gc.async = true;
+ gc.src = '//gc.zgo.at/count.js';
+ gc.setAttribute('data-goatcounter', 'https://' + CODIGO + '.goatcounter.com/count');
+ document.head.appendChild(gc);
+
+ /* --- Envio de eventos --------------------------------------------- */
+ /* Si alguien toca algo antes de que cargue el contador, el evento espera
+    en la cola y sale cuando carga. Sin cola se perderian los primeros. */
+ var cola = [];
+ function listo(){ return window.goatcounter && typeof window.goatcounter.count === 'function'; }
+ function ev(camino, titulo){
+  var e = {path: camino, title: titulo, event: true};
+  if(listo()){ window.goatcounter.count(e); }
+  else if(cola.length < 25){ cola.push(e); }
+ }
+ gc.addEventListener('load', function(){
+  while(cola.length && listo()){ window.goatcounter.count(cola.shift()); }
+ });
+
+ /* --- 1. Que guia elige cada persona -------------------------------- */
+ var accesos = document.querySelectorAll('.role-link');
+ for(var i = 0; i < accesos.length; i++){
+  accesos[i].addEventListener('click', function(){
+   var rol = (this.getAttribute('href') || '').replace('#', '');
+   ev('guia/' + rol, 'Acceso a la guia de ' + rol);
+  });
+ }
+
+ /* --- 2. Que temas se despliegan ------------------------------------ */
+ /* El evento toggle salta al abrir Y al cerrar: solo se cuenta al abrir.
+    Los botones de desplegar y contraer todo abren 21 bloques de una: eso
+    dispararia 21 eventos falsos, asi que se los ignora por tiempo. */
+ var ultimoLote = 0;
+ function lote(){ ultimoLote = Date.now(); }
+
+ function ranura(t){
+  return (t || '').toLowerCase()
+   .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+   .replace(/[^a-z0-9]+/g, '-')
+   .replace(/^-+|-+$/g, '')
+   .slice(0, 55);
+ }
+
+ var bloques = document.querySelectorAll('details');
+ for(var j = 0; j < bloques.length; j++){
+  bloques[j].addEventListener('toggle', function(){
+   if(!this.open) return;
+   if(Date.now() - ultimoLote < 500) return;
+   var guia = this.closest ? this.closest('.role') : null;
+   var donde = guia && guia.id ? guia.id : 'preguntas';
+   var s = this.querySelector('summary');
+   var texto = s ? s.textContent.trim() : '';
+   ev('tema/' + donde + '/' + ranura(texto), texto.slice(0, 120));
+  });
+ }
+
+ /* --- 3. Desplegar y contraer todo ---------------------------------- */
+ var exp = document.getElementById('expandir');
+ var cer = document.getElementById('cerrar');
+ if(exp) exp.addEventListener('click', function(){ lote(); ev('desplegar-todo', 'Desplegar todos los temas'); });
+ if(cer) cer.addEventListener('click', function(){ lote(); ev('contraer-todo', 'Contraer todos los temas'); });
+
+ /* --- 4. Cuantos se llevan el PDF ----------------------------------- */
+ /* Se escucha beforeprint y no el boton, asi tambien cuenta a quien
+    imprime con Ctrl+P sin pasar por la regleta. */
+ window.addEventListener('beforeprint', function(){ ev('pdf', 'Imprimir o guardar el PDF'); });
+
+ /* --- 5. Cuantos escriben a Academica -------------------------------- */
+ var correos = document.querySelectorAll('a[href^="mailto:"]');
+ for(var k = 0; k < correos.length; k++){
+  correos[k].addEventListener('click', function(){ ev('contacto', 'Escribir a Secretaria Academica'); });
+ }
+})();
+</script>
 </body>
 </html>
